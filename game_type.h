@@ -19,6 +19,8 @@ int undo_move(game_state* game, char* move);
 
 char** move_list(game_state game);
 
+int move_num(game_state* game);
+
 int print_state(game_state game);
 
 int init_game(int type, game_state* game);

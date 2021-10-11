@@ -17,10 +17,10 @@ char symbol( int num ){
 
 int ttt_make_move( game_state* game , const char* move ){
     int index = move[0]-48;
-    int turn = game->turn % 2 == 0 ? -1 : 1;
+    int turn = (game->turn) % 2 == 0 ? -1 : 1;
     if(game->game_data[index] == 0){
         game->game_data[index] = turn;
-        game->turn++;
+        (game->turn)++;
         return 0;
     }
     return 1;
@@ -29,24 +29,36 @@ int ttt_make_move( game_state* game , const char* move ){
 int ttt_undo_move(game_state* game, const char* move){
     int index = move[0]-48;
     game->game_data[index] = 0;
-    game->turn--;
+    (game->turn)--;
     return 0;
 }
 
 char** ttt_move_list( game_state game){
-    int num = 10-game.turn;;
+    int num = ttt_move_num(&game);
     int index = 0;
     char** vals = malloc(num * sizeof(char*));
     for(int i = 0; i < num; i++){
         vals[i] = malloc(1);
+        vals[i][0] = '0';
     }
-    for(char i = 0; i < 9; i++){
+    for(int i = 0; i < 9; i++){
         if(game.game_data[i] == 0) {
-            vals[index][0] = (char)(i + '0');
+            vals[index][0] += i;
             index++;
         }
     }
     return vals;
+}
+
+int ttt_move_num(game_state* game){
+    int num = 0;
+    for(int i = 0; i < 9; i++){
+        if(game->game_data[i] == 0) {
+            num++;
+        }
+    }
+    if(game->turn != 10 - num) game->turn = 10-num;
+    return num;
 }
 
 int ttt_print_state(game_state game){

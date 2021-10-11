@@ -26,6 +26,13 @@ char** move_list(game_state game){
     return NULL;
 }
 
+int move_num(game_state* game){
+    if(game->type == 0){
+        return ttt_move_num(game);
+    }
+    return -1;
+}
+
 
 int print_state(game_state game){
     if(game.type == 0){

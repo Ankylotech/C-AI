@@ -18,7 +18,7 @@ int main(){
     while((state = game_end(game)) == -1){
         printf("Calculate Move");
         printf("\n\n\n");
-        if(game.turn % 2 == 0) {
+        if((game.turn) % 2 == 0) {
             int size = 10;
             char *move = malloc(size);
             getline(&move, (size_t *) &size, stdin);

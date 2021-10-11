@@ -15,6 +15,8 @@ int ttt_undo_move(game_state* game, const char* move);
 
 char** ttt_move_list(game_state game);
 
+int ttt_move_num(game_state* game);
+
 int ttt_print_state(game_state game);
 
 int ttt_init_game(game_state* game);

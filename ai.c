@@ -14,15 +14,14 @@ float min(game_state game, int tiefe, float alpha, float beta);
 float max(game_state game, int tiefe, float alpha, float beta) {
     counter++;
     char** moves = move_list(game);
-    int num = 10-game.turn;
+    int num = move_num(&game);
     if (tiefe == 0 || num == 0) {
         return evaluate(game);
     }
     float maxWert = alpha;
     for (int i = 0; i < num; i++) {
         make_move(&game,moves[i]);
-        float wert = min(game, tiefe-1,
-                         maxWert, beta);
+        float wert = min(game, tiefe-1,maxWert, beta);
         if (wert > maxWert) {
             maxWert = wert;
             if (maxWert >= beta)
@@ -37,7 +36,7 @@ float max(game_state game, int tiefe, float alpha, float beta) {
 float min(game_state game, int tiefe, float alpha, float beta) {
     counter++;
     char** moves = move_list(game);
-    int num = 10-game.turn;
+    int num = move_num(&game);
     if (tiefe == 0 || num == 0) {
         return evaluate(game);
     }
@@ -64,15 +63,15 @@ int make_ai_move(game_state* game){
     char** moves = move_list(*game);
     if(moves == NULL) return -1;
     printf("List created\n");
-    int num = 10-game->turn;
+    int num = move_num(game);
     printf("The List has %d members\n",num);
     int index = 1;
-    int turn = game->turn %2;
+    int turn = (game->turn) %2;
     float grenzWert = (turn == 0) ? -1 : 1;
     for (int i = 0; i < num; i++) {
         printf("betrachte move %d\n",i);
         make_move(&copy,moves[i]);
-        if (turn == 1) {
+        if (turn == 0) {
             float wert;
             wert = min(copy, MAX_SEARCH_DEPTH, grenzWert, 1);
             if (wert > grenzWert) {
