@@ -25,11 +25,12 @@ int main(){
         printf("What difficulty do you want the AI to be (1-3)?\n");
         scanf("%d",&ai_difficulty);
         ai_depth = ai_depth_calc(game_type, ai_difficulty);
-        printf("Do you want to go first(1) or have the ai go first(0)\n");
+        printf("Do you want to go first(0) or have the ai go first(1)\n");
         scanf("%d",&ai_turn);
     }else{
         ai_turn = 2;
     }
+    getchar();
 
     printf("ai: %d", ai_turn);
 
@@ -39,15 +40,15 @@ int main(){
     int last_turn = game.turn-1;
     while((state = game_end(game)) == -1){
         int turn = game.turn;
-        if(turn % 2 == ai_turn) {
-            if(last_turn != turn) printf("Make a move:\n");
+        if (turn % 2 == ai_turn) {
+            if (last_turn != turn) printf("Making AI move:\n");
+            make_ai_move(&game, ai_depth);
+        } else {
+            if (last_turn != turn) printf("Make a move:\n");
             int size = 10;
             char *move = malloc(size);
             getline(&move, (size_t *) &size, stdin);
             make_move(&game, move);
-        }else {
-            if(last_turn != turn) printf("Making AI move:\n");
-            make_ai_move(&game, ai_depth);
         }
         if(turn != game.turn) {
             print_state(game);
