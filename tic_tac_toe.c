@@ -4,19 +4,22 @@
 
 #include "tic_tac_toe.h"
 
-char symbol( int num ){
+char symbol( int num , int index){
     switch (num) {
         case 1:
             return 'X';
         case -1:
             return 'O';
+        case 0:
+            return (char)('0' + index);
         default:
-            return ' ';
+            return '-';
     }
 }
 
 int ttt_make_move( game_state* game , const char* move ){
     int index = move[0]-48;
+    if(index < 0 || index > 8) return 1;
     int turn = (game->turn) % 2 == 0 ? -1 : 1;
     if(game->game_data[index] == 0){
         game->game_data[index] = turn;
@@ -67,7 +70,7 @@ int ttt_print_state(game_state game){
     for(i = 0; i < 3; i++){
         for(j = 0; j < 3; j++){
             index = i*3+j;
-            printf(" %c ",symbol(game.game_data[index]));
+            printf(" %c ",symbol(game.game_data[index],index));
             if(j < 2) printf("|");
         }
         printf("\n");
@@ -110,6 +113,19 @@ int ttt_copy_game(game_state original, game_state* copy){
     return 0;
 }
 
+int ttt_ai_depth(int difficulty){
+    switch (difficulty) {
+        case 1:
+            return 2;
+        case 2:
+            return 3;
+        case 3:
+            return 9;
+        default:
+            return 0;
+    }
+}
+
 float ttt_evaluate(game_state game){
     if(game.turn == 9) return 0;
     int* field = game.game_data;
@@ -142,7 +158,7 @@ float ttt_evaluate(game_state game){
 
 
 int ttt_game_end(game_state game){
-    if(game.turn == 9) return 0;
+    if(game.turn == 10) return 0;
     int* field = game.game_data;
     int** directionValues = malloc(3 * sizeof (int*));
     for(int i = 0; i < 3; i++){

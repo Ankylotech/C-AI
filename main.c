@@ -10,29 +10,52 @@
 int main(){
     game_state game;
     int state;
+    int game_type;
+    int ai_turn;
+    int ai_depth = 0;
+    int ai_difficulty;
 
-    init_game(0,&game);
+    printf("What game do you want to play?(0 = TicTacToe)\n");
+    scanf("%d",&game_type);
+
+    printf("Do you want to play against an AI (0) or with a friend ?\n");
+    scanf("%d",&ai_turn);
+
+    if(ai_turn == 0){
+        printf("What difficulty do you want the AI to be (1-3)?\n");
+        scanf("%d",&ai_difficulty);
+        ai_depth = ai_depth_calc(game_type, ai_difficulty);
+        printf("Do you want to go first(1) or have the ai go first(0)\n");
+        scanf("%d",&ai_turn);
+    }else{
+        ai_turn = 2;
+    }
+
+    printf("ai: %d", ai_turn);
+
+    init_game(game_type,&game);
     printf("\n");
     print_state(game);
-
+    int last_turn = game.turn-1;
     while((state = game_end(game)) == -1){
-        printf("Calculate Move");
-        printf("\n\n\n");
-        if((game.turn) % 2 == 0) {
+        int turn = game.turn;
+        if(turn % 2 == ai_turn) {
+            if(last_turn != turn) printf("Make a move:\n");
             int size = 10;
             char *move = malloc(size);
             getline(&move, (size_t *) &size, stdin);
-            printf("\n");
-            printf("accepted input %s\n",move);
             make_move(&game, move);
-            printf("Move executed. The Board is now:\n");
         }else {
-            printf("AI making move...");
-            make_ai_move(&game);
+            if(last_turn != turn) printf("Making AI move:\n");
+            make_ai_move(&game, ai_depth);
         }
-        print_state(game);
+        if(turn != game.turn) {
+            print_state(game);
+        }
+        last_turn = turn;
     }
-    printf("state: %d\n",state);
+    printf("\n\n\n  GAME OVER!  \n");
+    print_state(game);
     if(state == 0){
         printf("The game is a DRAW!\n");
     }else {

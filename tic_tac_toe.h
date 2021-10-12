@@ -23,6 +23,8 @@ int ttt_init_game(game_state* game);
 
 int ttt_copy_game(game_state original, game_state* copy);
 
+int ttt_ai_depth(int difficulty);
+
 float ttt_evaluate(game_state game);
 
 int ttt_game_end(game_state game);

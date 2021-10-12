@@ -35,6 +35,7 @@ int move_num(game_state* game){
 
 
 int print_state(game_state game){
+    printf("\n");
     if(game.type == 0){
         return ttt_print_state(game);
     }
@@ -56,6 +57,14 @@ int copy_game(game_state original, game_state* copy){
         return ttt_copy_game(original, copy);
     }
     return 2;
+}
+
+int ai_depth_calc(int type, int difficulty){
+    if(type == 0){
+        return ttt_ai_depth(difficulty);
+    }
+
+    return 0;
 }
 
 float evaluate(game_state game){

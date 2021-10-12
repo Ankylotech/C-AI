@@ -27,6 +27,8 @@ int init_game(int type, game_state* game);
 
 int copy_game(game_state original, game_state* copy);
 
+int ai_depth_calc(int type, int difficulty);
+
 float evaluate(game_state game);
 
 int game_end(game_state game);

@@ -7,25 +7,23 @@
 #include <stdlib.h>
 #include "ai.h"
 
-int counter = 0;
+float min(game_state game, int tiefe);
 
-float min(game_state game, int tiefe, float alpha, float beta);
-
-float max(game_state game, int tiefe, float alpha, float beta) {
-    counter++;
+float max(game_state game, int tiefe) {
     char** moves = move_list(game);
     int num = move_num(&game);
-    if (tiefe == 0 || num == 0) {
+    if(game_end(game) == 0) return 0;
+    else if(game_end(game) == 1) return 1;
+    else if(game_end(game) == 2) return -1;
+    if (tiefe == 0) {
         return evaluate(game);
     }
-    float maxWert = alpha;
+    float maxWert = -1;
     for (int i = 0; i < num; i++) {
         make_move(&game,moves[i]);
-        float wert = min(game, tiefe-1,maxWert, beta);
+        float wert = min(game, tiefe-1);
         if (wert > maxWert) {
             maxWert = wert;
-            if (maxWert >= beta)
-                break;
         }
         undo_move(&game,moves[i]);
     }
@@ -33,21 +31,21 @@ float max(game_state game, int tiefe, float alpha, float beta) {
     return maxWert;
 }
 
-float min(game_state game, int tiefe, float alpha, float beta) {
-    counter++;
+float min(game_state game, int tiefe) {
     char** moves = move_list(game);
     int num = move_num(&game);
-    if (tiefe == 0 || num == 0) {
+    if(game_end(game) == 0) return 0;
+    else if(game_end(game) == 1) return 1;
+    else if(game_end(game) == 2) return -1;
+    if (tiefe == 0) {
         return evaluate(game);
     }
-    float minWert = beta;
+    float minWert = 1;
     for (int i = 0; i < num; i++) {
         make_move(&game,moves[i]);
-        float wert = max( game ,tiefe-1, alpha, minWert);
+        float wert = max( game ,tiefe-1);
         if (wert < minWert) {
             minWert = wert;
-            if (minWert <= alpha)
-                break;
         }
         undo_move(&game,moves[i]);
     }
@@ -56,37 +54,32 @@ float min(game_state game, int tiefe, float alpha, float beta) {
 }
 
 
-int make_ai_move(game_state* game){
-    printf("making move\n");
-    game_state copy;
-    copy_game(*game, &copy);
+int make_ai_move(game_state* game, int depth){
+    if(game_end(*game) != -1) return 1;
     char** moves = move_list(*game);
     if(moves == NULL) return -1;
-    printf("List created\n");
     int num = move_num(game);
-    printf("The List has %d members\n",num);
-    int index = 1;
+    int index = 0;
     int turn = (game->turn) %2;
-    float grenzWert = (turn == 0) ? -1 : 1;
+    float grenzWert = (turn == 0) ? 1 : -1;
     for (int i = 0; i < num; i++) {
-        printf("betrachte move %d\n",i);
+        game_state copy;
+        copy_game(*game, &copy);
         make_move(&copy,moves[i]);
-        if (turn == 0) {
-            float wert;
-            wert = min(copy, MAX_SEARCH_DEPTH, grenzWert, 1);
+        float wert;
+        if (turn == 1) {
+            wert = min(copy, depth);
             if (wert > grenzWert) {
                 grenzWert = wert;
                 index = i;
             }
         }else {
-            float wert;
-            wert = max(copy, MAX_SEARCH_DEPTH, -1, grenzWert);
+            wert = max(copy, depth);
             if (wert < grenzWert) {
                 grenzWert = wert;
                 index = i;
             }
         }
-        if(counter % 1 == 0) printf("counter : %d\n",counter);
         undo_move(&copy,moves[i]);
     }
     make_move(game,moves[index]);
