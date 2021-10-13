@@ -7,6 +7,6 @@
 
 #include "game_type.h"
 
-int make_ai_move(game_state* game, int depth);
+char* make_ai_move(game_state* game, int depth);
 
 #endif //C_AI_AI_H

@@ -96,28 +96,36 @@ float sttt_evaluate(game_state game){
         for(int j = 0; j < 3; j++){
             int value = directionValues[i][j];
             if(value >= 3) return 1;
-            if(value <= -3) return 2;
+            if(value <= -3) return -1;
             if(value == 2) total += 2;
             if(value == -2) total += -2;
         }
     }
     if(ges == 9) return 0;
+    printf("guessing move as: %f ", total/12.0);
     return (float) (total/12.0);
 }
 
 void sttt_symbol(char * ret, int num , int index, int field){
-    char* val = "- ";
+    char val[3];
     switch (num) {
         case 1:
-            val = "X ";
+            val[0] = 'X';
+            val[1] = ' ';
+            val[2] = '\0';
             break;
         case -1:
-            val = "O ";
+            val[0] = 'O';
+            val[1] = ' ';
+            val[2] = '\0';
             break;
         case 0:
             sprintf(val,"%d%d", index, field);
             break;
         default:
+            val[0] = '-';
+            val[1] = ' ';
+            val[2] = '\0';
             break;
     }
     sprintf(ret,"%s", val);
@@ -127,17 +135,21 @@ int sttt_make_move( game_state* game , const char* move ){
     int index = move[0]-48;
     int board_field = move[1]-48;
     if(index < 0 || index > 8) return 1;
-    if(board_field < 0 || board_field > 8 || (board_field != game->game_data[81] && game->game_data[81] != -1) ||
-            sttt_game_end_cell(*game,board_field)) return 1;
+    if (board_field < 0 || board_field > 8 || board_field != game->game_data[81] && game->game_data[81] != -1
+        || sttt_game_end_cell(*game, board_field) != -1) {
+        return 2;
+    }
+
     int board_index = board_field*9+index;
     int turn = (game->turn) % 2 == 0 ? -1 : 1;
     if(game->game_data[board_index] == 0){
         game->game_data[board_index] = turn;
         (game->turn)++;
-        game->game_data[81] = index;
+        if(sttt_game_end_cell(*game,index) == -1) game->game_data[81] = index;
+        else  game->game_data[81] = -1;
         return 0;
     }
-    return 1;
+    return -1;
 }
 
 int sttt_undo_move(game_state* game, const char* move){
@@ -154,14 +166,15 @@ char** sttt_move_list( game_state game){
     int index = 0;
     char** vals = malloc(num * sizeof(char*));
     for(int i = 0; i < num; i++){
-        vals[i] = malloc(1);
+        vals[i] = malloc(3);
         vals[i][0] = '0';
         vals[i][1] = '0';
+        vals[i][2] = '\0';
     }
     int field = game.game_data[81];
-    if(field == -1){
+    if(field == -1 || sttt_game_end_cell(game,field) != -1){
         for(int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
+            if(sttt_game_end_cell(game,i) == -1) for (int j = 0; j < 9; j++) {
                 if (game.game_data[i*9+j] == 0) {
                     vals[index][0] += j;
                     vals[index][1] += i;
@@ -196,7 +209,7 @@ int sttt_move_num(game_state* game){
     return num;
 }
 
-int sttt_print_state(game_state game){
+int sttt_print_state(game_state game) {
     int i,j;
     int index;
     static int list[9] = {0,1,2,9,10,11,18,19,20};

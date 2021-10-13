@@ -41,8 +41,9 @@ char** ttt_move_list( game_state game){
     int index = 0;
     char** vals = malloc(num * sizeof(char*));
     for(int i = 0; i < num; i++){
-        vals[i] = malloc(1);
+        vals[i] = malloc(2);
         vals[i][0] = '0';
+        vals[i][1] = '\0';
     }
     for(int i = 0; i < 9; i++){
         if(game.game_data[i] == 0) {

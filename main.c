@@ -32,28 +32,24 @@ int main(){
     }
     getchar();
 
-    printf("ai: %d", ai_turn);
-
     init_game(game_type,&game);
-    printf("\n");
+    printf("state:\n");
     print_state(game);
-    int last_turn = game.turn-1;
     while((state = game_end(game)) == -1){
         int turn = game.turn;
         if (turn % 2 == ai_turn) {
-            if (last_turn != turn) printf("Making AI move:\n");
-            make_ai_move(&game, ai_depth);
+            printf("Making AI move:\n");
+            char* move = make_ai_move(&game, ai_depth);
+            print_state(game);
+            printf("AI moved: %s\n" , move);
         } else {
-            if (last_turn != turn) printf("Make a move:\n");
+            printf("Make a move:\n");
             int size = 10;
             char *move = malloc(size);
             getline(&move, (size_t *) &size, stdin);
-            make_move(&game, move);
-        }
-        if(turn != game.turn) {
+            printf("%d\n",make_move(&game, move));
             print_state(game);
         }
-        last_turn = turn;
     }
     printf("\n\n\n  GAME OVER!  \n");
     print_state(game);
